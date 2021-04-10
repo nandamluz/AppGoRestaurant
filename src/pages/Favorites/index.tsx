@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import api from '../../services/api';
 import formatValue from '../../utils/formatValue';
@@ -29,9 +30,15 @@ interface Food {
 
 const Favorites: React.FC = () => {
   const [favorites, setFavorites] = useState<Food[]>([]);
+  const navigation = useNavigation();
 
   useEffect(() => {
-    async function loadFavorites(): Promise<void> {
+    navigation.addListener('focus', () => {
+    loadFavorites()
+    })
+    ;
+  }, []);
+  async function loadFavorites(): Promise<void> {
       try{
         const response = await api.get('/favorites');
 
@@ -42,12 +49,8 @@ const Favorites: React.FC = () => {
         })),
       );
     } catch (error){
-      console.log('########', error)
+
     }}
-
-
-    loadFavorites();
-  }, []);
 
   return (
     <Container>

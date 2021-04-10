@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
 
 import api from '../../services/api';
 import formatValue from '../../utils/formatValue';
@@ -29,23 +31,23 @@ interface Food {
 
 const Orders: React.FC = () => {
   const [orders, setOrders] = useState<Food[]>([]);
+  const navigation = useNavigation();
 
-  useEffect(() => {
-    async function loadOrders(): Promise<void> {
+
+    useEffect(() => {
+    navigation.addListener('focus', () => {
+       loadOrders();
+      });
+  }, [navigation]);
+
+  async function loadOrders(): Promise<void> {
       try{
         const response = await api.get('/orders');
-        setOrders(
-        response.data.map((order: Food) =>({
-          ...order,
-          formattedPrice: formatValue(order.price),
-        })),
-      );
-    } catch (error){
-      console.log('########', error)
-    }}
+        setOrders(response.data);
 
-    loadOrders();
-  }, []);
+    } catch (error){
+      console.log('error', error)
+    }}
 
   return (
     <Container>

@@ -128,7 +128,7 @@ const FoodDetails: React.FC = () => {
     if( isFavorite){
       api.delete(`/favorites/${food.id}`)
     } else {
-      api.post('favorites', food);
+      api.post('/favorites', food);
     }
 
     setIsFavorite(!isFavorite)
@@ -146,17 +146,23 @@ const FoodDetails: React.FC = () => {
   }, [extras, food, foodQuantity]);
 
   async function handleFinishOrder(): Promise<void> {
-    // Finish the order and save on the API
-  }
+    try {
 
-  // Calculate the correct icon name
+      food.formattedPrice = cartTotal
+      await api.post("/orders", food);
+
+      navigation.navigate('Orders')
+
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
   const favoriteIconName = useMemo(
     () => (isFavorite ? 'favorite' : 'favorite-border'),
     [isFavorite],
   );
 
   useLayoutEffect(() => {
-    // Add the favorite icon on the right of the header bar
     navigation.setOptions({
       headerRight: () => (
         <MaterialIcon
